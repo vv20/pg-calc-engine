@@ -1,0 +1,40 @@
+name: Run tests, ensure code standard compliance and minimum test coverage
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install Dependencies
+        run: |
+          cd $GITHUB_WORKSPACE
+          # Python
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Linter
+        run: |
+          pylint main
+
+      - name: Run Tests
+        run: |
+          coverage run -m pytest -s
+          coverage report --fail-under=90
