@@ -1,0 +1,32 @@
+file-property: file-value
+
+localcsvfile:
+  directory: test/temp
+
+googlesheets:
+  charged-attack-reference-data:
+    spreadsheet: abcde12345
+    sheetname: Charged Attacks
+    range: A1:D250
+
+store:
+  cache: memory
+  evaluation: configuration
+  charged-attack-reference-data: googlesheets
+  cpm-reference-data: configuration
+  enriched-library: localcsvfile
+
+evaluation:
+  test-evaluation:
+    weights:
+      attack: 1
+      defence: 1
+      hp: 1
+      attack-cycle-length-inverted: 1500
+      attack-cycle-damage: 10
+      type-vulnerability: 100
+    constraints:
+      max-cp: 900
+    attack-evaluation-weights:
+      attack-cycle-length-inverted: 100
+      attack-cycle-damage: 1

@@ -1,0 +1,216 @@
+Charged attack,Charged attack type,Charged attack damage,Charged attack energy cost
+Wrap,Normal,60,-45
+Hyper Beam,Normal,150,-80
+Dark Pulse,Dark,80,-50
+Sludge,Poison,50,-40
+Vice Grip,Normal,40,-40
+Flame Wheel,Fire,60,-55
+Megahorn,Bug,110,-55
+Flamethrower,Fire,90,-55
+Dig,Ground,70,-50
+Cross Chop,Fighting,55,-35
+Psybeam,Psychic,70,-60
+Earthquake,Ground,110,-65
+Stone Edge,Rock,100,-55
+Ice Punch,Ice,55,-40
+Heart Stamp,Psychic,40,-40
+Discharge,Electric,65,-45
+Flash Cannon,Steel,110,-70
+Drill Peck,Flying,65,-40
+Ice Beam,Ice,90,-55
+Blizzard,Ice,140,-75
+Heat Wave,Fire,95,-75
+Aerial Ace,Flying,55,-40
+Drill Run,Ground,80,-45
+Petal Blizzard,Grass,110,-65
+Mega Drain,Grass,25,-55
+Bug Buzz,Bug,100,-60
+Poison Fang,Poison,45,-40
+Night Slash,Dark,50,-35
+Bubble Beam,Water,25,-40
+Submission,Fighting,60,-50
+Low Sweep,Fighting,40,-40
+Aqua Jet,Water,45,-45
+Aqua Tail,Water,55,-35
+Seed Bomb,Grass,65,-45
+Psyshock,Psychic,70,-45
+Ancient Power,Rock,60,-45
+Rock Tomb,Rock,70,-60
+Rock Slide,Rock,65,-45
+Power Gem,Rock,85,-50
+Shadow Sneak,Ghost,50,-45
+Shadow Punch,Ghost,55,-35
+Ominous Wind,Ghost,45,-45
+Shadow Ball,Ghost,100,-55
+Magnet Bomb,Steel,70,-45
+Iron Head,Steel,70,-50
+Parabolic Charge,Electric,70,-50
+Thunder Punch,Electric,55,-40
+Thunder,Electric,100,-60
+Thunderbolt,Electric,90,-55
+Twister,Dragon,45,-45
+Dragon Pulse,Dragon,90,-60
+Dragon Claw,Dragon,50,-35
+Disarming Voice,Fairy,70,-45
+Draining Kiss,Fairy,60,-55
+Dazzling Gleam,Fairy,110,-70
+Moonblast,Fairy,110,-60
+Play Rough,Fairy,90,-60
+Cross Poison,Poison,50,-35
+Sludge Bomb,Poison,80,-50
+Sludge Wave,Poison,110,-65
+Gunk Shot,Poison,130,-75
+Bone Club,Ground,55,-35
+Bulldoze,Ground,80,-60
+Mud Bomb,Ground,60,-40
+Signal Beam,Bug,75,-55
+X-Scissor,Bug,65,-40
+Flame Charge,Fire,65,-50
+Flame Burst,Fire,70,-55
+Fire Blast,Fire,140,-80
+Brine,Water,60,-50
+Water Pulse,Water,80,-55
+Scald,Water,85,-50
+Hydro Pump,Water,130,-75
+Psychic,Psychic,75,-55
+Psystrike,Psychic,90,-45
+Icy Wind,Ice,60,-45
+Giga Drain,Grass,50,-80
+Fire Punch,Fire,55,-40
+Solar Beam,Grass,150,-80
+Leaf Blade,Grass,70,-35
+Power Whip,Grass,90,-50
+Air Cutter,Flying,60,-55
+Hurricane,Flying,110,-65
+Brick Break,Fighting,40,-40
+Swift,Normal,55,-35
+Horn Attack,Normal,40,-35
+Stomp,Normal,55,-40
+Hyper Fang,Normal,80,-50
+Body Slam,Normal,50,-35
+Rest,Normal,50,-35
+Struggle,Normal,35,-100
+Scald Blastoise,Water,50,-80
+Hydro Pump Blastoise,Water,90,-80
+Wrap Green,Normal,25,-45
+Wrap Pink,Normal,25,-45
+Water Gun Blastoise,Water,6,4
+Close Combat,Fighting,100,-45
+Dynamic Punch,Fighting,90,-50
+Focus Blast,Fighting,150,-75
+Aurora Beam,Ice,80,-60
+Wild Charge,Electric,100,-45
+Zap Cannon,Electric,150,-80
+Avalanche,Ice,90,-45
+Brave Bird,Flying,130,-55
+Sky Attack,Flying,85,-55
+Sand Tomb,Ground,25,-40
+Rock Blast,Rock,50,-40
+Silver Wind,Bug,60,-45
+Night Shade,Ghost,80,-45
+Gyro Ball,Steel,80,-60
+Heavy Slam,Steel,70,-50
+Overheat,Fire,130,-55
+Grass Knot,Grass,90,-50
+Energy Ball,Grass,90,-55
+Futuresight,Psychic,110,-65
+Mirror Coat,Psychic,60,-55
+Outrage,Dragon,110,-60
+Crunch,Dark,70,-45
+Foul Play,Dark,70,-45
+Surf,Water,75,-45
+Draco Meteor,Dragon,150,-65
+Doom Desire,Steel,75,-40
+Psycho Boost,Psychic,70,-35
+Origin Pulse,Water,130,-60
+Precipice Blades,Ground,130,-60
+Weather Ball Fire,Fire,55,-35
+Weather Ball Ice,Ice,55,-35
+Weather Ball Rock,Rock,55,-35
+Weather Ball Water,Water,55,-35
+Frenzy Plant,Grass,100,-45
+Blast Burn,Fire,110,-50
+Hydro Cannon,Water,80,-40
+Last Resort,Normal,90,-55
+Meteor Mash,Steel,100,-50
+Skull Bash,Normal,130,-75
+Acid Spray,Poison,20,-45
+Earth Power,Ground,90,-55
+Crabhammer,Water,85,-50
+Lunge,Bug,60,-45
+Octazooka,Water,50,-50
+Mirror Shot,Steel,35,-35
+Superpower,Fighting,85,-40
+Fell Stinger,Bug,20,-35
+Leaf Tornado,Grass,45,-40
+Drain Punch,Fighting,20,-40
+Shadow Bone,Ghost,80,-45
+Muddy Water,Water,35,-35
+Blaze Kick,Fire,60,-40
+Razor Shell,Water,35,-35
+Power Up Punch,Fighting,20,-35
+Giga Impact,Normal,150,-80
+Frustration,Normal,10,-70
+Return,Normal,130,-70
+Synchronoise,Psychic,80,-50
+Sacred Sword,Fighting,60,-35
+Flying Press,Fighting,90,-40
+Aura Sphere,Fighting,100,-55
+Payback,Dark,110,-60
+Rock Wrecker,Rock,110,-50
+Aeroblast,Flying,170,-75
+Techno Blast Normal,Normal,120,-55
+Techno Blast Burn,Fire,120,-55
+Techno Blast Chill,Ice,120,-55
+Techno Blast Water,Water,120,-55
+Techno Blast Shock,Electric,120,-55
+Fly,Flying,80,-45
+V Create,Fire,95,-40
+Leaf Storm,Grass,130,-55
+Tri Attack,Normal,65,-50
+Feather Dance,Flying,35,-50
+Weather Ball Normal,Normal,55,-35
+Psychic Fangs,Psychic,40,-35
+Sacred Fire,Fire,130,-65
+Icicle Spear,Ice,65,-40
+Aeroblast Plus,Flying,170,-75
+Aeroblast Plus Plus,Flying,170,-75
+Sacred Fire Plus,Fire,130,-65
+Sacred Fire Plus Plus,Fire,130,-65
+Acrobatics,Flying,110,-60
+Luster Purge,Psychic,120,-60
+Mist Ball,Psychic,120,-60
+Brutal Swing,Dark,55,-35
+Seed Flare,Grass,130,-75
+Obstruct,Dark,15,-40
+Shadow Force,Ghost,120,-90
+Meteor Beam,Rock,120,-60
+Fusion Bolt,Electric,90,-45
+Fusion Flare,Fire,90,-45
+Poltergeist,Ghost,150,-75
+High Horsepower,Ground,100,-60
+Glaciate,Ice,60,-40
+Breaking Swipe,Dragon,50,-35
+Boomburst,Normal,150,-70
+Double Iron Bash,Steel,50,-35
+Mystical Fire,Fire,60,-45
+Liquidation,Water,70,-45
+Dragon Ascent,Flying,150,-70
+Magma Storm,Fire,65,-40
+Spacial Rend,Dragon,95,-50
+Oblivion Wing,Flying,85,-50
+Natures Madness,Fairy,80,-50
+Triple Axel,Ice,60,-45
+Trailblaze,Grass,65,-45
+Scorching Sands,Ground,80,-50
+Roar Of Time,Dragon,150,-65
+Bleakwind Storm,Flying,60,-45
+Sandsear Storm,Ground,60,-45
+Wildbolt Storm,Electric,60,-45
+Spirit Shackle,Ghost,50,-40
+Volt Tackle,Electric,90,-50
+Darkest Lariat,Dark,120,-60
+Sunsteel Strike,Steel,135,-65
+Moongeist Beam,Ghost,135,-65
+High Jump Kick,Fighting,110,-55
+Sparkling Aria,Water,80,-45

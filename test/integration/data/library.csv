@@ -1,0 +1,21 @@
+Name,Pokemon,Fast attack,Charged attack,Level,IV attack,IV defence,IV HP
+
+Ivysaur,Ivysaur,Vine Whip,Sludge Bomb,20.0,14,10,13
+
+Charmander,Charmander,Ember,Flame Charge,20.0,15,13,10
+
+Butterfree,Butterfree,Confusion,Psychic,19.0,15,10,15
+
+Pidgeot,Pidgeot,Steel Wing,Aerial Ace,13.0,12,15,15
+
+Raticate,Raticate,Bite,Hyper Beam,30.0,13,11,13
+
+Raticate (Alola),Raticate (Alola),Bite,Return,25.0,11,15,15
+
+Fearow,Fearow,Peck,Drill Run,8.5,14,14,13
+
+Arbok,Arbok,Acid,Gunk Shot,15.0,15,12,15
+
+Pikachu,Pikachu,Thunder Shock,Discharge,20.0,15,15,14
+
+Sandslash (Alola),Sandslash (Alola),Metal Claw,Blizzard,14.0,10,15,15

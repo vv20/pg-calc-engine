@@ -1,0 +1,81 @@
+Fast attack,Fast attack type,Fast attack duration,Fast attack damage,Fast attack energy generated
+Fury Cutter,Bug,1,2,4
+Bug Bite,Bug,1,3,3
+Bite,Dark,1,4,2
+Sucker Punch,Dark,2,8,7
+Dragon Breath,Dragon,1,4,3
+Thunder Shock,Electric,2,3,9
+Spark,Electric,2,5,7
+Low Kick,Fighting,2,4,5
+Karate Chop,Fighting,2,5,9
+Ember,Fire,2,7,6
+Wing Attack,Flying,2,5,7
+Peck,Flying,2,6,5
+Lick,Ghost,1,3,3
+Shadow Claw,Ghost,2,6,8
+Vine Whip,Grass,2,5,8
+Razor Leaf,Grass,2,9,4
+Mud Shot,Ground,2,4,8
+Ice Shard,Ice,3,9,10
+Frost Breath,Ice,2,7,5
+Quick Attack,Normal,2,5,8
+Scratch,Normal,1,4,2
+Tackle,Normal,1,3,3
+Pound,Normal,2,4,4
+Cut,Normal,1,3,2
+Poison Jab,Poison,2,7,7
+Acid,Poison,2,6,5
+Psycho Cut,Psychic,2,3,9
+Rock Throw,Rock,2,8,5
+Metal Claw,Steel,2,5,7
+Bullet Punch,Steel,2,6,7
+Water Gun,Water,1,3,3
+Splash,Water,4,0,12
+Mud-Slap,Ground,3,12,10
+Zen Headbutt,Psychic,3,8,6
+Confusion,Psychic,4,16,12
+Poison Sting,Poison,2,4,9
+Bubble,Water,3,8,11
+Feint Attack,Dark,2,6,6
+Steel Wing,Steel,2,7,6
+Fire Fang,Fire,2,8,5
+Rock Smash,Fighting,3,9,7
+Transform,Normal,3,0,0
+Counter,Fighting,2,8,6
+Powder Snow,Ice,2,5,8
+Charge Beam,Electric,3,5,11
+Volt Switch,Electric,4,12,16
+Dragon Tail,Dragon,3,13,9
+Air Slash,Flying,3,9,9
+Infestation,Bug,3,6,12
+Struggle Bug,Bug,3,9,8
+Astonish,Ghost,3,12,10
+Hex,Ghost,3,6,12
+Iron Tail,Steel,3,10,7
+Fire Spin,Fire,3,11,10
+Bullet Seed,Grass,3,5,13
+Extrasensory,Psychic,3,8,10
+Snarl,Dark,3,5,13
+Hidden Power,Normal,3,9,8
+Take Down,Normal,3,5,8
+Waterfall,Water,3,12,8
+Yawn,Normal,4,0,12
+Present,Normal,3,3,12
+Smack Down,Rock,3,11,8
+Charm,Fairy,3,15,6
+Lock On,Normal,1,1,5
+Thunder Fang,Electric,2,8,5
+Ice Fang,Ice,2,8,5
+Gust,Flying,4,16,12
+Incinerate,Fire,5,20,20
+Fairy Wind,Fairy,2,4,9
+Double Kick,Fighting,3,8,12
+Magical Leaf,Grass,3,10,10
+Rollout,Rock,3,8,13
+Water Shuriken,Water,3,6,14
+Leafage,Grass,2,6,7
+Geomancy,Fairy,3,4,13
+Psywave,Psychic,1,3,4
+Metal Sound,Steel,2,3,8
+Sand Attack,Ground,1,2,4
+Force Palm,Fighting,3,13,10

@@ -1,0 +1,37 @@
+localcsvfile:
+  directory: 'test/integration/data'
+
+store:
+  cache: memory
+  charged-attack-reference-data: localcsvfile
+  charged-attack-per-pokemon-reference-data: localcsvfile
+  cpm-reference-data: localcsvfile
+  delta: memory
+  evaluation: configuration
+  enriched-library: memory
+  fast-attack-reference-data: localcsvfile
+  fast-attack-per-pokemon-reference-data: localcsvfile
+  library: localcsvfile
+  partition: memory
+  partition-result: memory
+  pokemon-type-reference-data: localcsvfile
+  result: memory
+  type-chart-reference-data: localcsvfile
+
+partition-size: 100
+results-size: 10
+
+evaluation:
+  integration-test-evaluation:
+    weights:
+      attack: 1
+      defence: 1
+      hp: 1
+      attack-cycle-length-inverted: 1500
+      attack-cycle-damage: 10
+      type-vulnerability: 100
+    constraints:
+      max-cp: 1500
+    attack-evaluation-weights:
+      attack-cycle-length-inverted: 100
+      attack-cycle-damage: 1
