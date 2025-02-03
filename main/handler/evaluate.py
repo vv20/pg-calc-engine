@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 
 class ReportingService(Singleton):
     def __init__(self):
-        if self._initialised:
+        if self.initialised:
             return
         self.progress: int = 0
         self.total: int = 0
-        self._initialised = True
+        self.initialised = True
 
     def report_progress(self, progress: int):
         if float(progress - self.progress) / float(self.total) >= 0.1:

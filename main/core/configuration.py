@@ -1,3 +1,6 @@
+'''
+Application configuration logic.
+'''
 import logging
 import sys
 from typing import Any
@@ -26,17 +29,17 @@ class ConfigurationService(Singleton):
     '''
 
     def __init__(self) -> None:
-        if self._initialised:
+        if self.initialised:
             return
         self.configuration: dict[str, Any] = {}
-        self._initialised = True
+        self.initialised = True
 
     def parse_configuration_file(self, filename: str) -> None:
         '''
         Opens and parses the file with the provided name as a YAML file.
         '''
         logger.info('Parsing configuration file %s', filename)
-        with open(filename, 'r') as configuration_file:
+        with open(filename, 'r', encoding='utf8') as configuration_file:
             self.configuration = yaml.safe_load(configuration_file)
 
     def set_configuration_property(self, key: str, value: Any) -> None:
@@ -83,8 +86,8 @@ class ConfigurationService(Singleton):
             if path_segment not in current_configuration:
                 if default is not None:
                     return default
-                else:
-                    raise ConfigurationException('Missing required property {} from configuration'.format(key))
+                raise ConfigurationException(
+                    f'Missing required property {key} from configuration')
             current_configuration = current_configuration[path_segment]
         return current_configuration[path[-1]] if path[-1] in current_configuration else default
 

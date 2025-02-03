@@ -1,3 +1,7 @@
+'''
+Implementation of the factory pattern.
+'''
+from collections.abc import Callable
 import logging
 
 from main.core.configuration import ConfigurationException
@@ -13,10 +17,10 @@ class Factory(Singleton):
 
     def __init__(self) -> None:
         super().__init__()
-        if self._initialised:
+        if self.initialised:
             return
-        self.types: dict[str, function] = {}
-        self._initialised: bool = True
+        self.types: dict[str, Callable] = {}
+        self.initialised: bool = True
 
     def construct(self, type_: str, **kwargs) -> object:
         '''
@@ -27,7 +31,9 @@ class Factory(Singleton):
         raise a ConfigurationException.
         '''
         if type_ not in self.types:
-            raise ConfigurationException('Could not find a type adapter for type ' + type_ + ' and factory ' + str(type(self)))
+            raise ConfigurationException(
+                'Could not find a type adapter for type ' + type_ +
+                ' and factory ' + str(type(self)))
         logger.debug('Constructing a %s', self.types[type_])
         return self.types[type_](**kwargs)
 

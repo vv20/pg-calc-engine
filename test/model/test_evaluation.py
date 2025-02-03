@@ -234,9 +234,9 @@ def test_compare_evaluation_results(framework_setup):
     for evaluation_data_row in evaluation_data.to_dict('records'):
         evaluation = Evaluation(evaluation_data_row)
         break
-    result1 = EvaluationResult(team=[IVYSAUR, CHARMANDER, BUTTERFREE], evaluation=evaluation)
+    result1 = EvaluationResult(team=[IVYSAUR, CHARMANDER, BUTTERFREE], e=evaluation)
     evaluation.constraints[EvaluationColumn.MAX_CP_CONSTRAINT] = 1500
-    result2 = EvaluationResult(team=[CHARMANDER, IVYSAUR, BUTTERFREE], evaluation=evaluation)
+    result2 = EvaluationResult(team=[CHARMANDER, IVYSAUR, BUTTERFREE], e=evaluation)
 
     assert result1 < result2
     assert result1 <= result2
