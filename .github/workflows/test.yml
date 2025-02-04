@@ -40,6 +40,8 @@ jobs:
           coverage report --fail-under=90
 
       - name: Raise Pull Request to Main
-        uses: peter-evans/create-pull-request@v7
-        with:
-          branch: main
+        uses: poorva17/create-pr-action@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_BRANCH: develop
+          BASE_BRANCH: main
