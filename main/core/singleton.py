@@ -1,4 +1,7 @@
-class Singleton(object):
+'''
+Implementation of the singleton pattern.
+'''
+class Singleton:
     '''
     A class that always returns the same instance when it is instantiated, i.e.
 
@@ -12,9 +15,9 @@ class Singleton(object):
     '''
 
     _instance: object = None
-    _initialised: bool = False
+    initialised: bool = False
 
-    def __new__(cls, *args, **kwargs) -> object:
+    def __new__(cls) -> object:
         if cls._instance is None:
             cls._instance: Singleton = object.__new__(cls)
         return cls._instance

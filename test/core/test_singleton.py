@@ -4,10 +4,10 @@ class DummySingleton(Singleton):
     
     def __init__(self) -> None:
         super().__init__()
-        if self._initialised:
+        if self.initialised:
             return
         self.counter: int = 1
-        self._initialised = True
+        self.initialised = True
 
 def test_singleton_is_always_the_same():
     instance1: DummySingleton = DummySingleton()

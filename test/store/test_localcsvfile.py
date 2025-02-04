@@ -27,13 +27,16 @@ def localcsv_setup(mocker):
     mock_mkdir = mocker.patch('main.store.localcsvfile.os.mkdir')
     
     mock_open = mocker.patch('main.store.localcsvfile.open')
+    mock_file = MagicMock()
+    mock_open.return_value.__enter__.return_value = mock_file
 
     yield {
         'mock_read_csv': mock_read_csv,
         'mock_path_exists': mock_path_exists,
         'mock_isdir': mock_isdir,
         'mock_mkdir': mock_mkdir,
-        'mock_open': mock_open
+        'mock_open': mock_open,
+        'mock_file': mock_file
     }
 
 def test_read_store(framework_setup, localcsv_setup):
@@ -92,21 +95,23 @@ def test_read_store_file_not_found(framework_setup, localcsv_setup):
 
 def test_write_store(framework_setup, localcsv_setup):
     mock_open = localcsv_setup['mock_open']
+    mock_file = localcsv_setup['mock_file']
     data = MagicMock(spec=DataFrame)
 
     write_store(DataType.ENRICHED_LIBRARY, data)
 
-    assert mock_open.called_once_with('test/temp/enriched-library.csv', 'w')
-    assert data.to_csv.called_once_with(mock_open.return_value)
+    mock_open.assert_called_once_with('test/temp/enriched-library.csv', 'w', encoding='utf8')
+    data.to_csv.assert_called_once_with(mock_file, index=False)
 
 def test_write_store_paginated(framework_setup, localcsv_setup):
     mock_open = localcsv_setup['mock_open']
+    mock_file = localcsv_setup['mock_file']
     data = MagicMock(spec=DataFrame)
 
     write_store(data_type=DataType.ENRICHED_LIBRARY, data=data, page_title='page-title')
 
-    assert mock_open.called_once_with('test/temp/enriched-library.page-title.csv', 'w')
-    assert data.to_csv.called_once_with(mock_open.return_value)
+    mock_open.assert_called_once_with('test/temp/enriched-library.page-title.csv', 'w', encoding='utf8')
+    data.to_csv.assert_called_once_with(mock_file, index=False)
 
 def test_read_store_after_write(framework_setup, localcsv_setup):
     data = MagicMock(spec=DataFrame)
