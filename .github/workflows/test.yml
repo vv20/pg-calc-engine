@@ -40,8 +40,6 @@ jobs:
           coverage report --fail-under=90
 
       - name: Raise Pull Request to Main
-        uses: poorva17/create-pr-action@main
+        run: gh pr create -B main -H develop --title 'Merge develop into main' --body 'Created by Github action'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HEAD_BRANCH: develop
-          BASE_BRANCH: main
