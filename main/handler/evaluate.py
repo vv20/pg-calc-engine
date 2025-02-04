@@ -6,7 +6,7 @@ from typing import Any
 
 from main.core.configuration import configure, ConfigurationService
 from main.core.singleton import Singleton
-from main.model.evaluation import Evaluation, EvaluationResult
+from main.model.evaluation import retrieve_evaluations, Evaluation, EvaluationResult
 from main.model.library import LibraryColumn
 from main.store import read_store, write_store, DataType
 
@@ -36,14 +36,9 @@ def handler(event: dict[str, Any], context: dict[str, Any]) -> None:
     partition_number: int = event['partition_number']
     partition: DataFrame = read_store(DataType.PARTITION, str(partition_number))
     library: DataFrame = read_store(DataType.ENRICHED_LIBRARY)
-    evaluation_data: DataFrame = read_store(DataType.EVALUATION)
-    evaluations = []
-    results: dict[str, list] = {}
     results_size: int = ConfigurationService().get_configuration_property('results-size')
-    for evaluation_data_row in evaluation_data.to_dict('records'):
-        evaluation: Evaluation = Evaluation(evaluation_data_row)
-        evaluations.append(evaluation)
-        results[evaluation.evaluation_name] = []
+    evaluations: list[Evaluation] = retrieve_evaluations(read_store(DataType.EVALUATION))
+    results: dict[str, list] = {e.evaluation_name: [] for e in evaluations}
     n_combinations: int = (partition['1'].values[1] - partition['1'].values[0]) * (partition['2'].values[1] - partition['2'].values[0]) * (partition['2'].values[1] - partition['2'].values[0])
     counter: int = 0
     cache: dict[int, dict[str, Any]] = {}

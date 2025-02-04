@@ -5,7 +5,7 @@ from enum import Enum
 from functools import total_ordering
 from typing import Any
 
-from pandas import Series
+from pandas import DataFrame, Series
 
 from main.model.library import EnrichedLibraryColumn, LibraryColumn
 from main.model.referencedata import PokemonType
@@ -207,3 +207,12 @@ class EvaluationResult:
 
     def __repr__(self) -> str:
         return str(self)
+
+def retrieve_evaluations(data: DataFrame) -> list[Evaluation]:
+    '''
+    Utility function for constructing evaluation objects from configuration data.
+    '''
+    evaluations = []
+    for evaluation_data_row in data.to_dict('records'):
+        evaluations.append(Evaluation(evaluation_data_row))
+    return evaluations

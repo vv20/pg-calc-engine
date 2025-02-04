@@ -3,6 +3,7 @@ import numpy
 from pandas import DataFrame, Series
 
 from main.core.configuration import configure
+from main.model.evaluation import retrieve_evaluations, Evaluation
 from main.model.library import EnrichedLibraryColumn, LibraryColumn
 from main.model.referencedata import ChargedAttackColumn, CpmColumn, FastAttackColumn, PokemonTypeColumn, PokemonType
 from main.store import read_store, write_store, DataType
@@ -57,22 +58,25 @@ def enrich_with_type_vulnerabilities(library: DataFrame) -> DataFrame:
         library[pokemon_type.value + '_vuln'] = result
     return library
 
-def enrich_with_optimised_versions(library: DataFrame) -> DataFrame:
-    logger.info('Enriching the Pokemon library with optimised versions of the Pokemon')
+def optimise(library: DataFrame, evaluation: Evaluation) -> DataFrame:
+    logger.info('Optimising Pokemon for the %s evaluation', evaluation.evaluation_name)
     return library
 
 def enrich(library: DataFrame) -> DataFrame:
     enriched_library = enrich_with_pokemon_types(library)
     enriched_library = enrich_with_cpm(enriched_library)
     enriched_library = enrich_with_attacks(enriched_library)
-    enriched_library = enrich_with_type_vulnerabilities(enriched_library)
-    return enrich_with_optimised_versions(enriched_library)
+    return enrich_with_type_vulnerabilities(enriched_library)
 
 def handler() -> None:
     configure()
     library: DataFrame = read_store(DataType.LIBRARY)
     enriched_library: DataFrame = enrich(library)
     write_store(DataType.ENRICHED_LIBRARY, enriched_library)
+    evaluations: list[Evaluation] = retrieve_evaluations(read_store(DataType.EVALUATION))
+    for evaluation in evaluations:
+        optimised_library = optimise(enriched_library, evaluation)
+        write_store(DataType.ENRICHED_LIBRARY, optimised_library, page_title=evaluation.evaluation_name)
 
 if __name__ == '__main__':
     handler()
