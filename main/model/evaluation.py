@@ -48,11 +48,8 @@ def _sum_inverted_attack_cycle_length(team: list[dict[str, Any]]) -> float:
     inverted_cycle_lengths: list[float] = list(map(lambda cl: 1.0/cl, cycle_lengths))
     return sum(inverted_cycle_lengths)
 
-def _evaluate_max_cp(team: list[dict[str, Any]], constraint: Any) -> bool:
-    for pokemon in team:
-        if pokemon.get(EnrichedLibraryColumn.CP.value) > constraint:
-            return False
-    return True
+def _evaluate_max_cp(pokemon: dict[str, Any], constraint: Any) -> bool:
+    return pokemon.get(EnrichedLibraryColumn.CP.value) <= constraint
 
 def _sum_attack_cycle_damage(team: list[dict[str, Any]]) -> float:
     return _sum_team_attribute(team, EnrichedLibraryColumn.DPT)
@@ -146,12 +143,12 @@ class Evaluation:
         result['score'] = score
         return result
 
-    def matches_constraints(self, team: list[dict[str, Any]]) -> bool:
+    def matches_constraints(self, pokemon: dict[str, Any]) -> bool:
         '''
         Evaluate whether the team matches the constraint values.
         '''
         for constraint, value in self.constraints.items():
-            if not CONSTRAINT_EVALUATIONS[constraint](team, value):
+            if not CONSTRAINT_EVALUATIONS[constraint](pokemon, value):
                 return False
         return True
 
@@ -176,7 +173,8 @@ class EvaluationResult:
         self.team: list[dict[str, Any]] = team
         self.evaluation_name: str = e.evaluation_name
         self.names: list[str] = [pokemon[LibraryColumn.POKEMON_NAME.value] for pokemon in team]
-        self.result: float = 0 if not e.matches_constraints(team) else e.evaluate_team(team)
+        team_matches: bool = all(e.matches_constraints(p) for p in team)
+        self.result: float = 0 if not team_matches else e.evaluate_team(team)
 
     def __lt__(self, other) -> bool:
         return self.result < other.result

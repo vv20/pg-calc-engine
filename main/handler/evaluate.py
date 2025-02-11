@@ -1,8 +1,13 @@
+'''
+Logic to evaluate a partition of the Pokemon library according to
+an evaluation formula.
+'''
+from typing import Any
+
 import datetime
 import heapq
 import logging
 from pandas import DataFrame
-from typing import Any
 
 from main.core.configuration import configure, ConfigurationService
 from main.core.singleton import Singleton
@@ -14,65 +19,103 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 class ReportingService(Singleton):
+    '''
+    A service that is used to report the progress of a calculation.
+    '''
     def __init__(self):
         if self.initialised:
             return
         self.progress: int = 0
         self.total: int = 0
+        self.counter: int = 0
+        self.start_time: datetime.datetime = None
+        self.end_time: datetime.datetime = None
         self.initialised = True
 
-    def report_progress(self, progress: int):
-        if float(progress - self.progress) / float(self.total) >= 0.1:
-            logger.info('Completed %d%% of the calculation', float(progress) / float(self.total) * 100)
-            self.progress = progress
+    def report_progress(self) -> None:
+        '''
+        Report the current progress of a calculation.
+        '''
+        self.counter += 1
+        if float(self.counter - self.progress) / float(self.total) >= 0.1:
+            logger.info('Completed %d%% of the calculation',
+                        float(self.counter) / float(self.total) * 100)
+            self.progress = self.counter
 
-def get_pokemon_from_cache(i: int, cache: dict[int, dict[str, Any]], library: DataFrame) -> dict[str, Any]:
-    if i not in cache:
-        cache[i] = library.iloc[i].to_dict()
-    return cache[i]
+    def prepare(self, partition: DataFrame, evaluation_name: str) -> None:
+        '''
+        Prepare to report the progress of a calculation.
+        '''
+        partition_1_len: int = partition['1'].values[1] - partition['1'].values[0]
+        partition_2_len: int = partition['2'].values[1] - partition['2'].values[0]
+        partition_3_len: int = partition['3'].values[1] - partition['3'].values[0]
+        self.total = partition_1_len * partition_2_len * partition_3_len
+        logger.info('Evaluating formula %d for %d team combinations', evaluation_name, self.total)
+
+    def start(self) -> None:
+        '''
+        Report the start of a calculation.
+        '''
+        self.start_time = datetime.datetime.now()
+        self.counter = 0
+        self.progress = 0
+
+    def end(self) -> None:
+        '''
+        Report the end of the calculation.
+        '''
+        self.end_time = datetime.datetime.now()
+        logger.info('Calculation completed in %s', str(self.end_time - self.start_time))
+
+_cache: dict[int, dict[str, Any]] = {}
+def _get_pokemon_from_cache(i: int, library: DataFrame) -> dict[str, Any]:
+    if i not in _cache:
+        _cache[i] = library.iloc[i].to_dict()
+    return _cache[i]
 
 def handler(event: dict[str, Any], context: dict[str, Any]) -> None:
+    '''
+    Apply the evaluation formula to all teams in the partition, and return
+    the top <results-size> results by evaluation score.
+    '''
     configure()
-    partition_number: int = event['partition_number']
-    partition: DataFrame = read_store(DataType.PARTITION, str(partition_number))
-    library: DataFrame = read_store(DataType.ENRICHED_LIBRARY)
+    evaluation_name: str = event['partition'].split('.')[0]
+    partition: DataFrame = read_store(DataType.PARTITION, page_title=event['partition'])
+    library: DataFrame = read_store(DataType.ENRICHED_LIBRARY, page_title=evaluation_name)
     results_size: int = ConfigurationService().get_configuration_property('results-size')
-    evaluations: list[Evaluation] = retrieve_evaluations(read_store(DataType.EVALUATION))
-    results: dict[str, list] = {e.evaluation_name: [] for e in evaluations}
-    n_combinations: int = (partition['1'].values[1] - partition['1'].values[0]) * (partition['2'].values[1] - partition['2'].values[0]) * (partition['2'].values[1] - partition['2'].values[0])
-    counter: int = 0
-    cache: dict[int, dict[str, Any]] = {}
-    start_time: datetime.datetime = datetime.datetime.now()
-    logger.info('Evaluating %d formula(e) for %d team combinations', len(evaluations), n_combinations)
-    ReportingService().total = n_combinations
+    result: list = []
+    evaluation: Evaluation = [e for e in retrieve_evaluations(
+        read_store(DataType.EVALUATION)) if e.evaluation_name == evaluation_name][0]
+    ReportingService().prepare(partition, evaluation_name)
+    ReportingService().start()
     for i in range(partition['1'].values[0], partition['1'].values[1]):
-        pokemon1: dict[str, Any] = get_pokemon_from_cache(i, cache, library)
+        pokemon1: dict[str, Any] = _get_pokemon_from_cache(i, library)
         for j in range(partition['2'].values[0], partition['2'].values[1]):
             if i == j:
                 continue
-            pokemon2: dict[str, Any] = get_pokemon_from_cache(j, cache, library)
+            pokemon2: dict[str, Any] = _get_pokemon_from_cache(j, library)
             for k in range(partition['3'].values[0], partition['3'].values[1]):
-                if i == k or j == k:
+                if k in (i, j):
                     continue
-                pokemon3: dict[str, Any] = get_pokemon_from_cache(k, cache, library)
-                for evaluation in evaluations:
-                    evaluation_result: EvaluationResult = EvaluationResult([pokemon1, pokemon2, pokemon3], evaluation)
-                    if len(results[evaluation.evaluation_name]) >= results_size:
-                        heapq.heapreplace(results[evaluation.evaluation_name], evaluation_result)
-                    else:
-                        heapq.heappush(results[evaluation.evaluation_name], evaluation_result)
-                counter += 1
-                ReportingService().report_progress(counter)
-    for evaluation_name in results.keys():
-        result = DataFrame({
-            '1': [r.team[0][LibraryColumn.POKEMON_NAME.value] for r in results[evaluation_name]],
-            '2': [r.team[1][LibraryColumn.POKEMON_NAME.value] for r in results[evaluation_name]],
-            '3': [r.team[2][LibraryColumn.POKEMON_NAME.value] for r in results[evaluation_name]],
-            'result': [r.result for r in results[evaluation_name]]
-        })
-        write_store(DataType.PARTITION_RESULT, result, evaluation_name + '.' + str(partition_number))
-    end_time: datetime.datetime = datetime.datetime.now()
-    logger.info('Calculation completed in %s', str(end_time - start_time))
+                pokemon3: dict[str, Any] = _get_pokemon_from_cache(k, library)
+                evaluation_result: EvaluationResult = EvaluationResult(
+                    [pokemon1, pokemon2, pokemon3],
+                    evaluation)
+                if len(result) >= results_size:
+                    heapq.heapreplace(result, evaluation_result)
+                else:
+                    heapq.heappush(result, evaluation_result)
+                ReportingService().report_progress()
+    write_store(
+        DataType.PARTITION_RESULT,
+        DataFrame({
+                '1': [r.team[0][LibraryColumn.POKEMON_NAME.value] for r in result],
+                '2': [r.team[1][LibraryColumn.POKEMON_NAME.value] for r in result],
+                '3': [r.team[2][LibraryColumn.POKEMON_NAME.value] for r in result],
+                'result': [r.result for r in result]
+            }),
+        page_title=event['partition'])
+    ReportingService().end()
 
 if __name__ == '__main__':
-    handler({'partition_number': 3}, {})
+    handler({'permutation': 'my-first-gl-evaluation.0'}, {})

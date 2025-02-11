@@ -1,3 +1,3 @@
 [MASTER]
 
-disable=no-member,too-few-public-methods
+disable=no-member,too-few-public-methods,unused-argument

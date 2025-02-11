@@ -69,3 +69,10 @@ class PokemonTypeColumn(Enum):
     BASE_HP = 'Base HP'
     TYPE_1 = 'Type 1'
     TYPE_2 = 'Type 2'
+
+class PokemonEvolutionColumn(Enum):
+    '''
+    Attribute of a DataFrame that represent Pokemon evolutions.
+    '''
+    POKEMON = 'Pokemon'
+    EVOLUTION = 'Evolution'

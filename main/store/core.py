@@ -16,6 +16,7 @@ class DataType(Enum):
     Types of data used in the calculation.
     '''
     EVALUATION = 'evaluation'
+    EVOLUTION = 'evolution'
     CACHE = 'cache'
     CHARGED_ATTACK_REFERENCE_DATA = 'charged-attack-reference-data'
     CHARGED_ATTACK_PER_POKEMON_REFERENCE_DATA = 'charged-attack-per-pokemon-reference-data'
