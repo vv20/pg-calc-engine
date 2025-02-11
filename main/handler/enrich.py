@@ -96,7 +96,7 @@ def _enrich_with_attacks(lib: DataFrame) -> DataFrame:
         right_on=FastAttackColumn.ATTACK.value)
     lib = lib.merge(
         charged_attacks,
-        left_on=LibraryColumn.CHARGED_ATTACK.value,
+        left_on=LibraryColumn.CHARGED_ATTACK_1.value,
         right_on=ChargedAttackColumn.ATTACK.value)
     lib[EnrichedLibraryColumn.FAST_ATTACK_STAB.value] = lib.apply(
         _stab_calc(FastAttackColumn.TYPE.value), axis='columns')
@@ -176,7 +176,7 @@ def _optimise_attacks(library: DataFrame, evaluation: Evaluation) -> DataFrame:
     fast_attacks: DataFrame = read_store(DataType.FAST_ATTACK_PER_POKEMON_REFERENCE_DATA)
     charged_attacks: DataFrame = read_store(DataType.CHARGED_ATTACK_PER_POKEMON_REFERENCE_DATA)
     library.drop(
-        labels=[LibraryColumn.FAST_ATTACK.value, LibraryColumn.CHARGED_ATTACK.value],
+        labels=[LibraryColumn.FAST_ATTACK.value, LibraryColumn.CHARGED_ATTACK_1.value],
         axis='columns',
         inplace=True)
     library = library.merge(
@@ -195,7 +195,7 @@ def _optimise_attacks(library: DataFrame, evaluation: Evaluation) -> DataFrame:
         right_on=AttackPerPokemonColumn.POKEMON.value)
     library.rename(
         columns={
-            AttackPerPokemonColumn.ATTACK.value: LibraryColumn.CHARGED_ATTACK.value
+            AttackPerPokemonColumn.ATTACK.value: LibraryColumn.CHARGED_ATTACK_1.value
         }, inplace=True)
     library = _enrich_with_attacks(library)
     library['attack_eval'] = library.apply(evaluation.evaluate_attacks, axis='columns')
@@ -205,7 +205,7 @@ def _optimise_attacks(library: DataFrame, evaluation: Evaluation) -> DataFrame:
     library[LibraryColumn.POKEMON_NAME.value] += ' with fast attack '
     library[LibraryColumn.POKEMON_NAME.value] += library[LibraryColumn.FAST_ATTACK.value]
     library[LibraryColumn.POKEMON_NAME.value] += ' and charged attack '
-    library[LibraryColumn.POKEMON_NAME.value] += library[LibraryColumn.CHARGED_ATTACK.value]
+    library[LibraryColumn.POKEMON_NAME.value] += library[LibraryColumn.CHARGED_ATTACK_1.value]
     return library
 
 def _optimise(library: DataFrame, evaluation: Evaluation) -> DataFrame:

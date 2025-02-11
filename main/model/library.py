@@ -12,7 +12,7 @@ class LibraryColumn(Enum):
     POKEMON_TYPE = 'Pokemon'
     POKEMON_LEVEL = 'Level'
     FAST_ATTACK = 'Fast attack'
-    CHARGED_ATTACK = 'Charged attack'
+    CHARGED_ATTACK_1 = 'Charged attack 1'
     ATTACK = 'IV attack'
     DEFENCE = 'IV defence'
     HP = 'IV HP'
