@@ -19,36 +19,36 @@ def setup(mocker):
 
 def test_integration(setup):
     enrich_handler()
-    n_partitions = distribute_handler()
-    assert n_partitions == 10
-    for i in range(n_partitions):
-        evaluate_handler(event={'partition_number': i}, context={})
+    partitions = distribute_handler()
+    assert len(partitions) == 10
+    for partition in partitions:
+        evaluate_handler(event={'partition': partition}, context={})
     reduce_handler()
     result = read_store(DataType.RESULT, page_title='integration-test-evaluation')
     assert len(result) == 10
     top_row = result.sort_values(by=['result'], ascending=False).iloc[0].to_dict()
     assert explain_handler(event={'pokemon_names': [top_row['1'], top_row['2'], top_row['3']], 'evaluation_name': 'integration-test-evaluation'}, context={}) == {
         'attack': {
-            'value': 322.0,
+            'value': 359.0,
             'weight': 1
         },
         'attack-cycle-damage': {
-            'value': 24.11813186813187,
+            'value': 29.576923076923077,
             'weight': 10
         },
         'attack-cycle-length-inverted': {
-            'value': 0.1304945054945055,
+            'value': 0.25384615384615383,
             'weight': 1500
         },
         'defence': {
-            'value': 312.0,
+            'value': 318.0,
             'weight': 1
         },
         'hp': {
-            'value': 346.0,
+            'value': 348.0,
             'weight': 1
         },
-        'score': 1416.9230769230771,
+        'score': 1701.5384615384614,
         'type-vulnerability': {
             'value': 0.0,
             'weight': 100

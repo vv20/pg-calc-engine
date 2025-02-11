@@ -1,4 +1,4 @@
-from main.model.evaluation import Evaluation, EvaluationColumn, EvaluationResult
+from main.model.evaluation import Evaluation, EvaluationColumn, EvaluationResult, retrieve_evaluations
 from main.store import read_store, DataType
 
 from test.util import framework_setup
@@ -169,19 +169,11 @@ BUTTERFREE = {
 }
 
 def test_evaluation(framework_setup):
-    evaluation_data = read_store(DataType.EVALUATION)
-    evaluation = None
-    for evaluation_data_row in evaluation_data.to_dict('records'):
-        evaluation = Evaluation(evaluation_data_row)
-        break
+    evaluation = retrieve_evaluations(read_store(DataType.EVALUATION))[0]
     assert evaluation.evaluate_team([IVYSAUR, CHARMANDER, BUTTERFREE]) == 1282.3441295546559
 
 def test_explanation(framework_setup):
-    evaluation_data = read_store(DataType.EVALUATION)
-    evaluation = None
-    for evaluation_data_row in evaluation_data.to_dict('records'):
-        evaluation = Evaluation(evaluation_data_row)
-        break
+    evaluation = retrieve_evaluations(read_store(DataType.EVALUATION))[0]
     explanation = evaluation.explain_team([IVYSAUR, CHARMANDER, BUTTERFREE])
     expected_explanation = {
         'attack': {
@@ -213,27 +205,16 @@ def test_explanation(framework_setup):
     assert explanation == expected_explanation
 
 def test_constraint_matching(framework_setup):
-    evaluation_data = read_store(DataType.EVALUATION)
-    evaluation = None
-    for evaluation_data_row in evaluation_data.to_dict('records'):
-        evaluation = Evaluation(evaluation_data_row)
-        break
-    assert not evaluation.matches_constraints([IVYSAUR, CHARMANDER, BUTTERFREE])
+    evaluation = retrieve_evaluations(read_store(DataType.EVALUATION))[0]
+    assert evaluation.matches_constraints(CHARMANDER)
+    assert not evaluation.matches_constraints(BUTTERFREE)
 
 def test_attack_evaluation(framework_setup):
-    evaluation_data = read_store(DataType.EVALUATION)
-    evaluation = None
-    for evaluation_data_row in evaluation_data.to_dict('records'):
-        evaluation = Evaluation(evaluation_data_row)
-        break
+    evaluation = retrieve_evaluations(read_store(DataType.EVALUATION))[0]
     assert evaluation.evaluate_attacks(IVYSAUR) == 16.346153846153847
 
 def test_compare_evaluation_results(framework_setup):
-    evaluation_data = read_store(DataType.EVALUATION)
-    evaluation = None
-    for evaluation_data_row in evaluation_data.to_dict('records'):
-        evaluation = Evaluation(evaluation_data_row)
-        break
+    evaluation = retrieve_evaluations(read_store(DataType.EVALUATION))[0]
     result1 = EvaluationResult(team=[IVYSAUR, CHARMANDER, BUTTERFREE], e=evaluation)
     evaluation.constraints[EvaluationColumn.MAX_CP_CONSTRAINT] = 1500
     result2 = EvaluationResult(team=[CHARMANDER, IVYSAUR, BUTTERFREE], e=evaluation)

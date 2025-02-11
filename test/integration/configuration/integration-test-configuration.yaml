@@ -8,6 +8,7 @@ store:
   cpm-reference-data: localcsvfile
   delta: memory
   evaluation: configuration
+  evolution: localcsvfile
   enriched-library: memory
   fast-attack-reference-data: localcsvfile
   fast-attack-per-pokemon-reference-data: localcsvfile
