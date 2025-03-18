@@ -8,7 +8,8 @@ from pandas import DataFrame
 from main.core.configuration import ConfigurationService, ConfigurationException
 from main.core.factory import factory_register
 from main.core.singleton import Singleton
-from main.model.evaluation import EvaluationColumn
+from main.model.evaluation import ATTACK_FEATURE_EVALUATIONS, CONSTRAINT_EVALUATIONS,\
+    FEATURE_EVALUATIONS, EvaluationColumn
 from main.store.core import DataStoreFactory, DataType
 
 TYPE = 'configuration'
@@ -16,10 +17,10 @@ TYPE = 'configuration'
 def _extract_values(
         configuration: dict[str, Any],
         result: dict[str, list[int]],
+        columns: list[EvaluationColumn],
         suffix: str):
-    for column_name in configuration:
-        value: int = int(configuration.get(column_name, 0))
-        result[column_name + suffix].append(value)
+    for column in columns:
+        result[column.value].append(int(configuration.get(column.value.replace(suffix, ''), 0)))
     return result
 
 @factory_register(TYPE, DataStoreFactory())
@@ -53,14 +54,17 @@ class ConfigurationStore(Singleton):
             result = _extract_values(
                 configs[model_name].get('weights', {}),
                 result,
+                FEATURE_EVALUATIONS.keys(),
                 '-weight')
             result = _extract_values(
                 configs[model_name].get('constraints', {}),
                 result,
+                CONSTRAINT_EVALUATIONS.keys(),
                 '-constraint')
             result = _extract_values(
                 configs[model_name].get('attack-evaluation-weights', {}),
                 result,
+                ATTACK_FEATURE_EVALUATIONS.keys(),
                 '-attack-evaluation-weight')
         return DataFrame(result)
 

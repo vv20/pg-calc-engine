@@ -26,7 +26,7 @@ evaluation:
       attack-cycle-damage: 10
       type-vulnerability: 100
     constraints:
-      max-cp: 900
+      max-cp: 1500
     attack-evaluation-weights:
       attack-cycle-length-inverted: 100
       attack-cycle-damage: 1

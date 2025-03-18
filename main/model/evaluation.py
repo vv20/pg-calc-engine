@@ -27,6 +27,7 @@ class EvaluationColumn(Enum):
     # attack evaluation weights
     ATTACK_CYCLE_LENGTH_INVERTED_AE_WEIGHT = 'attack-cycle-length-inverted-attack-evaluation-weight'
     ATTACK_CYCLE_DAMAGE_AE_WEIGHT = 'attack-cycle-damage-attack-evaluation-weight'
+    ATTACK_TYPE_WEAKNESS_AE_WEIGHT = 'attack-type-strength-attack-evaluation-weight'
 
 def _sum_team_attribute(team: list[dict[str, Any]], attribute: EnrichedLibraryColumn) -> float:
     pokemon_attributes: list[int] = list(map(lambda pokemon: pokemon.get(attribute.value), team))
@@ -43,7 +44,7 @@ def _sum_team_hp(team: list[dict[str, Any]]) -> float:
 
 def _sum_inverted_attack_cycle_length(team: list[dict[str, Any]]) -> float:
     cycle_lengths: list[int] = list(map(
-        lambda pokemon: pokemon.get(EnrichedLibraryColumn.ATTACK_CYCLE_LENGTH.value),
+        lambda pokemon: pokemon.get(EnrichedLibraryColumn.ATTACK_CYCLE_1_LENGTH.value),
         team))
     inverted_cycle_lengths: list[float] = list(map(lambda cl: 1.0/cl, cycle_lengths))
     return sum(inverted_cycle_lengths)
@@ -52,7 +53,7 @@ def _evaluate_max_cp(pokemon: dict[str, Any], constraint: Any) -> bool:
     return pokemon.get(EnrichedLibraryColumn.CP.value) <= constraint
 
 def _sum_attack_cycle_damage(team: list[dict[str, Any]]) -> float:
-    return _sum_team_attribute(team, EnrichedLibraryColumn.DPT)
+    return _sum_team_attribute(team, EnrichedLibraryColumn.DPT_1)
 
 def _sum_type_vuln_across_team(team: list[dict[str, Any]]) -> float:
     result: float = 0.0
@@ -63,6 +64,17 @@ def _sum_type_vuln_across_team(team: list[dict[str, Any]]) -> float:
                 vulnerable = False
                 break
         result -= 1.0 if vulnerable else 0.0
+    return result
+
+def _sum_attack_type_weakness(team: list[dict[str, Any]]) -> float:
+    result: float = 0.0
+    for pokemon_type in PokemonType:
+        weak: bool = True
+        for pokemon in team:
+            if pokemon.get(pokemon_type.value + '_str') >= 1.0:
+                weak = False
+                break
+        result -= 1.0 if weak else 0.0
     return result
 
 FEATURE_EVALUATIONS = {
@@ -83,6 +95,8 @@ ATTACK_FEATURE_EVALUATIONS = {
         _sum_inverted_attack_cycle_length,
     EvaluationColumn.ATTACK_CYCLE_DAMAGE_AE_WEIGHT:
         _sum_attack_cycle_damage,
+    EvaluationColumn.ATTACK_TYPE_WEAKNESS_AE_WEIGHT:
+        _sum_attack_type_weakness,
 }
 
 class Evaluation:
@@ -113,7 +127,9 @@ class Evaluation:
             EvaluationColumn.ATTACK_CYCLE_LENGTH_INVERTED_AE_WEIGHT: row.get(
                 EvaluationColumn.ATTACK_CYCLE_LENGTH_INVERTED_AE_WEIGHT.value, 0),
             EvaluationColumn.ATTACK_CYCLE_DAMAGE_AE_WEIGHT: row.get(
-                EvaluationColumn.ATTACK_CYCLE_DAMAGE_AE_WEIGHT.value, 0)
+                EvaluationColumn.ATTACK_CYCLE_DAMAGE_AE_WEIGHT.value, 0),
+            EvaluationColumn.ATTACK_TYPE_WEAKNESS_AE_WEIGHT: row.get(
+                EvaluationColumn.ATTACK_TYPE_WEAKNESS_AE_WEIGHT.value, 0)
         }
 
     def evaluate_team(self, team: list[dict[str, Any]]) -> float:

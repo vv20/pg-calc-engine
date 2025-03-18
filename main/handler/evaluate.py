@@ -50,7 +50,7 @@ class ReportingService(Singleton):
         partition_2_len: int = partition['2'].values[1] - partition['2'].values[0]
         partition_3_len: int = partition['3'].values[1] - partition['3'].values[0]
         self.total = partition_1_len * partition_2_len * partition_3_len
-        logger.info('Evaluating formula %d for %d team combinations', evaluation_name, self.total)
+        logger.info('Evaluating formula %s for %d team combinations', evaluation_name, self.total)
 
     def start(self) -> None:
         '''
@@ -79,8 +79,8 @@ def handler(event: dict[str, Any], context: dict[str, Any]) -> None:
     the top <results-size> results by evaluation score.
     '''
     configure()
-    evaluation_name: str = event['partition'].split('.')[0]
-    partition: DataFrame = read_store(DataType.PARTITION, page_title=event['partition'])
+    evaluation_name: str = event['permutation'].split('.')[0]
+    partition: DataFrame = read_store(DataType.PARTITION, page_title=event['permutation'])
     library: DataFrame = read_store(DataType.ENRICHED_LIBRARY, page_title=evaluation_name)
     results_size: int = ConfigurationService().get_configuration_property('results-size')
     result: list = []
@@ -114,7 +114,7 @@ def handler(event: dict[str, Any], context: dict[str, Any]) -> None:
                 '3': [r.team[2][LibraryColumn.POKEMON_NAME.value] for r in result],
                 'result': [r.result for r in result]
             }),
-        page_title=event['partition'])
+        page_title=event['permutation'])
     ReportingService().end()
 
 if __name__ == '__main__':
