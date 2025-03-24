@@ -68,47 +68,96 @@ def _stab_calc(attack_type_column: str) -> Callable:
         return 1.0
     return _inner
 
-def _calculate_attack_cycle_length(library: DataFrame) -> Series:
-    energy_cost: Series = -library[ChargedAttackColumn.ENERGY_COST.value].astype(float)
+def _calculate_attack_cycle_length(library: DataFrame, charged_attack: int) -> Series:
+    energy_cost_col: EnrichedLibraryColumn = EnrichedLibraryColumn.CHARGED_ATTACK_1_ENERGY_COST
+    if charged_attack == 2:
+        energy_cost_col = EnrichedLibraryColumn.CHARGED_ATTACK_2_ENERGY_COST
+    energy_cost: Series = -library[energy_cost_col.value].astype(float)
     energy_gen: Series = library[FastAttackColumn.ENERGY_GENERATED.value].astype(float)
     fast_attack_len: Series = library[FastAttackColumn.TURNS.value].astype(float)
-    return (energy_cost / energy_gen * fast_attack_len).apply(numpy.ceil)
+    return (energy_cost / energy_gen).apply(numpy.ceil) * fast_attack_len
 
-def _calculate_attack_cycle_damage(library: DataFrame) -> Series:
-    attack_cycle_len: Series = library[EnrichedLibraryColumn.ATTACK_CYCLE_LENGTH.value]
+def _calculate_attack_cycle_damage(library: DataFrame, charged_attack: int) -> Series:
+    cycle_length: EnrichedLibraryColumn = EnrichedLibraryColumn.ATTACK_CYCLE_1_LENGTH
+    damage: EnrichedLibraryColumn = EnrichedLibraryColumn.CHARGED_ATTACK_1_DAMAGE
+    stab: EnrichedLibraryColumn = EnrichedLibraryColumn.CHARGED_ATTACK_1_STAB
+    if charged_attack == 2:
+        cycle_length = EnrichedLibraryColumn.ATTACK_CYCLE_2_LENGTH
+        damage = EnrichedLibraryColumn.CHARGED_ATTACK_2_DAMAGE
+        stab = EnrichedLibraryColumn.CHARGED_ATTACK_2_STAB
+    attack_cycle_len: Series = library[cycle_length.value]
     fast_attack_len: Series = library[FastAttackColumn.TURNS.value].astype(float)
     fast_attack_dmg: Series = library[FastAttackColumn.DAMAGE.value].astype(float)
-    charged_attack_dmg: Series = library[ChargedAttackColumn.DAMAGE.value].astype(float)
-    return attack_cycle_len / fast_attack_len * fast_attack_dmg + charged_attack_dmg
+    fast_attack_stab: Series = library[EnrichedLibraryColumn.FAST_ATTACK_STAB.value].astype(float)
+    charged_attack_dmg: Series = library[damage.value].astype(float)
+    charged_attack_stab: Series = library[stab.value].astype(float)
+    return attack_cycle_len / fast_attack_len * (fast_attack_dmg * fast_attack_stab) + \
+            (charged_attack_dmg * charged_attack_stab)
 
-def _calculate_damage_per_turn(library: DataFrame) -> Series:
-    acd: Series = library[EnrichedLibraryColumn.ATTACK_CYCLE_DAMAGE.value]
-    acl: Series = library[EnrichedLibraryColumn.ATTACK_CYCLE_LENGTH.value]
+def _calculate_damage_per_turn(library: DataFrame, charged_attack: int) -> Series:
+    cycle_length: EnrichedLibraryColumn = EnrichedLibraryColumn.ATTACK_CYCLE_1_LENGTH
+    cycle_damage: EnrichedLibraryColumn = EnrichedLibraryColumn.ATTACK_CYCLE_1_DAMAGE
+    if charged_attack == 2:
+        cycle_length: EnrichedLibraryColumn = EnrichedLibraryColumn.ATTACK_CYCLE_2_LENGTH
+        cycle_damage: EnrichedLibraryColumn = EnrichedLibraryColumn.ATTACK_CYCLE_2_DAMAGE
+    acd: Series = library[cycle_damage.value]
+    acl: Series = library[cycle_length.value]
     return acd / acl
 
 def _enrich_with_attacks(lib: DataFrame) -> DataFrame:
     logger.info('Enriching the Pokemon library with attack data')
     fast_attacks: DataFrame = read_store(DataType.FAST_ATTACK_REFERENCE_DATA)
     charged_attacks: DataFrame = read_store(DataType.CHARGED_ATTACK_REFERENCE_DATA)
+    # enrich with reference data
     lib = lib.merge(
         fast_attacks,
         left_on=LibraryColumn.FAST_ATTACK.value,
         right_on=FastAttackColumn.ATTACK.value)
     lib = lib.merge(
         charged_attacks,
-        left_on=LibraryColumn.CHARGED_ATTACK.value,
+        left_on=LibraryColumn.CHARGED_ATTACK_1.value,
         right_on=ChargedAttackColumn.ATTACK.value)
+    lib.rename(
+        columns={
+            ChargedAttackColumn.DAMAGE.value: \
+                EnrichedLibraryColumn.CHARGED_ATTACK_1_DAMAGE.value,
+            ChargedAttackColumn.TYPE.value: \
+                EnrichedLibraryColumn.CHARGED_ATTACK_1_TYPE.value,
+            ChargedAttackColumn.ENERGY_COST.value: \
+                EnrichedLibraryColumn.CHARGED_ATTACK_1_ENERGY_COST.value
+        }, inplace=True)
+    lib.drop(columns=[ChargedAttackColumn.ATTACK.value], inplace=True)
+    lib = lib.merge(
+        charged_attacks,
+        left_on=LibraryColumn.CHARGED_ATTACK_2.value,
+        right_on=ChargedAttackColumn.ATTACK.value)
+    lib.rename(
+        columns={
+            ChargedAttackColumn.DAMAGE.value: \
+                EnrichedLibraryColumn.CHARGED_ATTACK_2_DAMAGE.value,
+            ChargedAttackColumn.TYPE.value: \
+                EnrichedLibraryColumn.CHARGED_ATTACK_2_TYPE.value,
+            ChargedAttackColumn.ENERGY_COST.value: \
+                EnrichedLibraryColumn.CHARGED_ATTACK_2_ENERGY_COST.value
+        }, inplace=True)
+    lib.drop(columns=[ChargedAttackColumn.ATTACK.value], inplace=True)
+    # calculate derived data
     lib[EnrichedLibraryColumn.FAST_ATTACK_STAB.value] = lib.apply(
         _stab_calc(FastAttackColumn.TYPE.value), axis='columns')
-    lib[EnrichedLibraryColumn.CHARGED_ATTACK_STAB.value] = lib.apply(
-        _stab_calc(ChargedAttackColumn.TYPE.value), axis='columns')
-    lib[EnrichedLibraryColumn.ATTACK_CYCLE_LENGTH.value] = _calculate_attack_cycle_length(lib)
-    lib[EnrichedLibraryColumn.ATTACK_CYCLE_DAMAGE.value] = _calculate_attack_cycle_damage(lib)
-    lib[EnrichedLibraryColumn.DPT.value] = _calculate_damage_per_turn(lib)
+    lib[EnrichedLibraryColumn.CHARGED_ATTACK_1_STAB.value] = lib.apply(
+        _stab_calc(EnrichedLibraryColumn.CHARGED_ATTACK_1_TYPE.value), axis='columns')
+    lib[EnrichedLibraryColumn.CHARGED_ATTACK_2_STAB.value] = lib.apply(
+        _stab_calc(EnrichedLibraryColumn.CHARGED_ATTACK_2_TYPE.value), axis='columns')
+    lib[EnrichedLibraryColumn.ATTACK_CYCLE_1_LENGTH.value] = _calculate_attack_cycle_length(lib, 1)
+    lib[EnrichedLibraryColumn.ATTACK_CYCLE_1_DAMAGE.value] = _calculate_attack_cycle_damage(lib, 1)
+    lib[EnrichedLibraryColumn.DPT_1.value] = _calculate_damage_per_turn(lib, 1)
+    lib[EnrichedLibraryColumn.ATTACK_CYCLE_2_LENGTH.value] = _calculate_attack_cycle_length(lib, 2)
+    lib[EnrichedLibraryColumn.ATTACK_CYCLE_2_DAMAGE.value] = _calculate_attack_cycle_damage(lib, 2)
+    lib[EnrichedLibraryColumn.DPT_2.value] = _calculate_damage_per_turn(lib, 2)
     return lib
 
 def _calculate_type_vulnerability(type_chart_slice: Series) -> Callable:
-    def _inner(row: Series):
+    def _inner(row: Series) -> float:
         type1: str = row.get(PokemonTypeColumn.TYPE_1.value)
         type2: str = row.get(PokemonTypeColumn.TYPE_2.value)
         vuln1: float = type_chart_slice[type1].astype(float).sum()
@@ -118,13 +167,36 @@ def _calculate_type_vulnerability(type_chart_slice: Series) -> Callable:
         return vuln1 * vuln2
     return _inner
 
+def _calculate_type_strength(type_chart_slice: Series) -> Callable:
+    def _inner(row: Series) -> float:
+        type1: str = row.get(EnrichedLibraryColumn.CHARGED_ATTACK_1_TYPE.value)
+        type2: str = row.get(EnrichedLibraryColumn.CHARGED_ATTACK_2_TYPE.value)
+        str1: float = float(type_chart_slice[type1])
+        str2: float = 1.0
+        if type2 is not None and type2 is not numpy.nan:
+            str2 = float(type_chart_slice[type2])
+        return str1 * str2
+    return _inner
+
 def _enrich_with_type_vulnerabilities(library: DataFrame) -> DataFrame:
     logger.info('Enriching the Pokemon library with type vulnerability data')
     type_chart: DataFrame = read_store(DataType.TYPE_CHART_REFERENCE_DATA)
     for pokemon_type in PokemonType:
+        # take the type chart row to check which types the pokemon is vulnerable to
         type_chart_slice: Series = type_chart[type_chart['Type'] == pokemon_type.value]
         result = library.apply(_calculate_type_vulnerability(type_chart_slice), axis='columns')
         library[pokemon_type.value + '_vuln'] = result
+    return library
+
+def _enrich_with_type_strength(library: DataFrame) -> DataFrame:
+    logger.info('Enriching the Pokemon library with type vulnerability data')
+    type_chart: DataFrame = read_store(DataType.TYPE_CHART_REFERENCE_DATA)
+    for pokemon_type in PokemonType:
+        # take the type chart column to check which types the pokemon is strong against
+        type_chart_slice: Series = type_chart[pokemon_type.value]
+        type_chart_slice.index = type_chart['Type']
+        result = library.apply(_calculate_type_strength(type_chart_slice), axis='columns')
+        library[pokemon_type.value + '_str'] = result
     return library
 
 def _expand_evolutions(library: DataFrame) -> DataFrame:
@@ -176,9 +248,10 @@ def _optimise_attacks(library: DataFrame, evaluation: Evaluation) -> DataFrame:
     fast_attacks: DataFrame = read_store(DataType.FAST_ATTACK_PER_POKEMON_REFERENCE_DATA)
     charged_attacks: DataFrame = read_store(DataType.CHARGED_ATTACK_PER_POKEMON_REFERENCE_DATA)
     library.drop(
-        labels=[LibraryColumn.FAST_ATTACK.value, LibraryColumn.CHARGED_ATTACK.value],
+        labels=[LibraryColumn.FAST_ATTACK.value, LibraryColumn.CHARGED_ATTACK_1.value],
         axis='columns',
-        inplace=True)
+        inplace=True,
+        errors='ignore')
     library = library.merge(
         fast_attacks,
         how='inner',
@@ -195,17 +268,31 @@ def _optimise_attacks(library: DataFrame, evaluation: Evaluation) -> DataFrame:
         right_on=AttackPerPokemonColumn.POKEMON.value)
     library.rename(
         columns={
-            AttackPerPokemonColumn.ATTACK.value: LibraryColumn.CHARGED_ATTACK.value
+            AttackPerPokemonColumn.ATTACK.value: LibraryColumn.CHARGED_ATTACK_1.value,
         }, inplace=True)
+    library = library.merge(
+        charged_attacks,
+        how='inner',
+        left_on=LibraryColumn.POKEMON_TYPE.value,
+        right_on=AttackPerPokemonColumn.POKEMON.value)
+    library.rename(
+        columns={
+            AttackPerPokemonColumn.ATTACK.value: LibraryColumn.CHARGED_ATTACK_2.value,
+        }, inplace=True)
+    library = library[library[LibraryColumn.CHARGED_ATTACK_1.value] != \
+                      library[LibraryColumn.CHARGED_ATTACK_2.value]].reset_index(drop=True)
     library = _enrich_with_attacks(library)
+    library = _enrich_with_type_strength(library)
     library['attack_eval'] = library.apply(evaluation.evaluate_attacks, axis='columns')
     group = library.groupby([LibraryColumn.POKEMON_NAME.value, LibraryColumn.POKEMON_TYPE.value])
     best_attacks = group['attack_eval'].transform(max)
     library = library[library['attack_eval'] == best_attacks].drop(columns=['attack_eval'])
     library[LibraryColumn.POKEMON_NAME.value] += ' with fast attack '
     library[LibraryColumn.POKEMON_NAME.value] += library[LibraryColumn.FAST_ATTACK.value]
-    library[LibraryColumn.POKEMON_NAME.value] += ' and charged attack '
-    library[LibraryColumn.POKEMON_NAME.value] += library[LibraryColumn.CHARGED_ATTACK.value]
+    library[LibraryColumn.POKEMON_NAME.value] += ' and first charged attack '
+    library[LibraryColumn.POKEMON_NAME.value] += library[LibraryColumn.CHARGED_ATTACK_1.value]
+    library[LibraryColumn.POKEMON_NAME.value] += ' and second charged attack '
+    library[LibraryColumn.POKEMON_NAME.value] += library[LibraryColumn.CHARGED_ATTACK_2.value]
     return library
 
 def _optimise(library: DataFrame, evaluation: Evaluation) -> DataFrame:

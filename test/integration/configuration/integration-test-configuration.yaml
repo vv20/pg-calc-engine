@@ -36,3 +36,4 @@ evaluation:
     attack-evaluation-weights:
       attack-cycle-length-inverted: 100
       attack-cycle-damage: 1
+      attack-type-weakness: 1
